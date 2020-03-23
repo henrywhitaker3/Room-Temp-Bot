@@ -68,7 +68,8 @@ def getDataFromSensor():
             log('Temp=' + str(temp) + ', Humidity=' + str(humidity), 'debug')
         except RuntimeError as error:
             log(error, level='error')
-            return False
+            continue
+        
         time.sleep(2.0)
 
 def getCurrentTemp():
