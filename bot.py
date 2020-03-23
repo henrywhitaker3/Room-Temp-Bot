@@ -24,13 +24,9 @@ PREV=None
 TEMP=None
 HUM=None
 
-def log(msg, error=False):
-    if error:
-        filename = 'err.log'
-    else:
-        filename = 'info.log'
-    with open(filename, 'a') as f:
-        f.write(str(datetime.datetime.now()) + ' ' + str(msg) + '\n')
+def log(msg, level='info'):
+    with open('bot.log', 'a') as f:
+        f.write('[' + str(level).upper() + '] ' + str(datetime.datetime.now()) + ' ' + str(msg) + '\n')
 
 
 def getDataFromSensor():
@@ -60,6 +56,7 @@ def getDataFromSensor():
             TEMP = temp
             log('Temp=' + str(temp) + ', Humidity=' + str(humidity))
         except RuntimeError as error:
+            log(error, level='error')
             return False
         time.sleep(2.0)
 
@@ -81,11 +78,11 @@ bot = commands.Bot(command_prefix='!')
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     guild = discord.utils.get(bot.guilds, name=GUILD)
-    log('Bot connected to discord')
+    log('Bot connected to discord', level='info')
 
 @bot.command(name='temp', help='Responds with temperature info')
 async def respondWithTemp(ctx):
-    log('Replying to !temp command') 
+    log('Replying to !temp command', level='info') 
     global HIGH, LOW, HOT, COLD
     current = getCurrentTemp()
     print('Replying to !temp command (' + str(current['temp']) + '°C)')
@@ -108,22 +105,20 @@ async def respondWithTemp(ctx):
 bot.remove_command('help')
 @bot.command(name='help')
 async def help(ctx):
-    log('Replying to !help command')
+    log('Replying to !help command', level='info')
     embed = discord.Embed(title="Room temp help", color=0xf77d74)
     embed.add_field(name='Info command', value="`!temp` - will return current, high and low temp", inline=True)
     await ctx.send(embed=embed)
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    with open('err.log', 'a') as f:
-        if event == 'on_message':
-            f.write(f'Unhandled message: {args[0]}\n')
-        else:
-            raise
+    log(event, level='error')
 
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CommandNotFound):
         True
+    else:
+        log(error, level='error')
 
 bot.run(TOKEN)
