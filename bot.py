@@ -40,7 +40,6 @@ def log(msg, level='info'):
         with open('bot.log', 'a') as f:
             f.write('[' + str(level).upper() + '] - ' + str(datetime.datetime.now()) + ' - ' + str(msg) + '\n')
 
-
 def getDataFromSensor():
     global HIGH, LOW, UNIT, TEMP, HUM
 
@@ -66,7 +65,7 @@ def getDataFromSensor():
 
             HUM = humidity
             TEMP = temp
-            log('Temp=' + str(temp) + ', Humidity=' + str(humidity))
+            log('Temp=' + str(temp) + ', Humidity=' + str(humidity), 'debug')
         except RuntimeError as error:
             log(error, level='error')
             return False
