@@ -28,6 +28,7 @@ cd ~
 git clone https://github.com/henrywhitaker3/Room-Temp-Bot.git
 mv Room-Temp-Bot/ bot
 cd bot
+pip3 install -r requirements.txt 
 cp .env.example .env
 ```
 
