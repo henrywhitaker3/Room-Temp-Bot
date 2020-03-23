@@ -1,0 +1,11 @@
+[Unit]
+Description=Room temp bot service
+After=multi-user.target
+
+[Service]
+Type=idle
+User=pi
+ExecStart=bash /home/pi/bot/start.sh
+
+[Install]
+WantedBy=multi-user.target
