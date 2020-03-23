@@ -9,6 +9,7 @@ import time
 import board
 import adafruit_dht
 import threading
+import datetime
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -22,6 +23,15 @@ LOW=None
 PREV=None
 TEMP=None
 HUM=None
+
+def log(msg, error=False):
+    if error:
+        filename = 'err.log'
+    else:
+        filename = 'info.log'
+    with open(filename, 'a') as f:
+        f.write(str(datetime.datetime.now()) + ' ' + str(msg) + '\n')
+
 
 def getDataFromSensor():
     global HIGH, LOW, UNIT, TEMP, HUM
@@ -48,6 +58,7 @@ def getDataFromSensor():
 
             HUM = humidity
             TEMP = temp
+            log('Temp=' + str(temp) + ', Humidity=' + str(humidity))
         except RuntimeError as error:
             return False
         time.sleep(2.0)
@@ -70,9 +81,11 @@ bot = commands.Bot(command_prefix='!')
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     guild = discord.utils.get(bot.guilds, name=GUILD)
+    log('Bot connected to discord')
 
 @bot.command(name='temp', help='Responds with temperature info')
 async def respondWithTemp(ctx):
+    log('Replying to !temp command') 
     global HIGH, LOW, HOT, COLD
     current = getCurrentTemp()
     print('Replying to !temp command (' + str(current['temp']) + '°C)')
@@ -95,6 +108,7 @@ async def respondWithTemp(ctx):
 bot.remove_command('help')
 @bot.command(name='help')
 async def help(ctx):
+    log('Replying to !help command')
     embed = discord.Embed(title="Room temp help", color=0xf77d74)
     embed.add_field(name='Info command', value="`!temp` - will return current, high and low temp", inline=True)
     await ctx.send(embed=embed)
