@@ -17,6 +17,7 @@ GUILD = os.getenv('DISCORD_GUILD')
 UNIT = os.getenv('UNIT')
 HOT = int(os.getenv('HOT'))
 COLD = int(os.getenv('COLD'))
+LOG_LEVEL = os.getenv('LOG_LEVEL')
 
 HIGH=None
 LOW=None
@@ -25,8 +26,19 @@ TEMP=None
 HUM=None
 
 def log(msg, level='info'):
-    with open('bot.log', 'a') as f:
-        f.write('[' + str(level).upper() + '] ' + str(datetime.datetime.now()) + ' ' + str(msg) + '\n')
+    global LOG_LEVEL
+
+    levels = {
+        'error': [ 'error' ],
+        'warn': [ 'error', 'warn' ],
+        'info': [ 'error', 'warn', 'info' ],
+        'debug': [ 'error', 'warn', 'info', 'debug' ],
+        'trace': [ 'error', 'warn', 'info', 'debug', 'trace' ],
+    }
+
+    if level in levels[LOG_LEVEL]:
+        with open('bot.log', 'a') as f:
+            f.write('[' + str(level).upper() + '] - ' + str(datetime.datetime.now()) + ' - ' + str(msg) + '\n')
 
 
 def getDataFromSensor():
